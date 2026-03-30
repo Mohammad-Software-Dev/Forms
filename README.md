@@ -1,73 +1,74 @@
-# React + TypeScript + Vite
+# Form Library Comparison
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A Vite + React + TypeScript demo that compares TanStack Form, React Hook Form, and Formik by implementing the same realistic workspace setup form with the same UI, data model, validation rules, and product requirements.
 
-Currently, two official plugins are available:
+## Goal
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+This project is designed to compare the libraries fairly in an implementation-focused way. The UI and business logic are shared so the meaningful differences come from the form engine itself:
 
-## React Compiler
+- developer experience
+- TypeScript ergonomics
+- validation integration
+- composability
+- nested and dynamic field handling
+- render behavior and scalability
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Planned Comparison Routes
 
-## Expanding the ESLint configuration
+- `/tanstack-form`
+- `/react-hook-form`
+- `/formik`
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Each page will render the same "Create Workspace / Team Setup" form with:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- shared shadcn/ui components
+- shared Tailwind layout and styling
+- one shared Zod schema
+- nested objects and dynamic arrays
+- conditional sections
+- cross-field and async validation
+- diagnostics panels and render counters
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Stack
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Vite
+- React
+- TypeScript
+- React Router
+- Tailwind CSS
+- shadcn/ui
+- Zod
+- TanStack Form
+- React Hook Form
+- Formik
+
+## Why This Exists
+
+All three libraries can solve the same product problem. This repo is intended to show how they differ in code structure, maintainability, and long-term ergonomics when the comparison is held constant.
+
+The narrative goal is to make it clear that:
+
+- the UI is identical because it is shared
+- the validation is identical because it comes from one schema
+- the business rules are identical
+- the differences therefore come from the form library and its integration model
+
+## Development
+
+This repository uses `pnpm`.
+
+```bash
+pnpm install
+pnpm dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Useful commands:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm build
+pnpm lint
 ```
+
+## Status
+
+The repository is currently set up as the foundation for the comparison app. The next implementation phase is to replace the starter Vite page with the shared routed comparison experience and the three form-library adapters.

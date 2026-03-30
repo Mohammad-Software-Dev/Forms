@@ -1,5 +1,6 @@
 {
   "name": "forms",
+  "description": "A Vite + React + TypeScript demo comparing TanStack Form, React Hook Form, and Formik with a shared UI and Zod schema.",
   "private": true,
   "version": "0.0.0",
   "type": "module",
