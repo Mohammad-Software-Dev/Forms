@@ -13,10 +13,19 @@ export function createEmptyTeamMember(
 }
 
 export const defaultWorkspaceValues: WorkspaceFormValues = {
+  workspaceName: "",
+  slug: "",
+  adminEmail: "",
+  password: "",
+  confirmPassword: "",
   organization: {
     companySize: "11-50",
     industry: "saas",
     timezone: "Europe/Berlin",
+  },
+  billing: {
+    useDifferentBillingContact: false,
+    billingEmail: "",
   },
   security: {
     enableSSO: false,
