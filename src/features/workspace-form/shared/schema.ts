@@ -11,15 +11,15 @@ import {
 
 export const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-const billingEmailSchema = z
-  .string()
-  .trim()
-  .email("Enter a valid billing email address.");
+const trimmedStringSchema = z.string().trim();
 
-const metadataUrlSchema = z
-  .string()
-  .trim()
-  .url("Enter a valid metadata URL.");
+const billingEmailSchema = trimmedStringSchema.pipe(
+  z.email({ error: "Enter a valid billing email address." }),
+);
+
+const metadataUrlSchema = trimmedStringSchema.pipe(
+  z.url({ error: "Enter a valid metadata URL." }),
+);
 
 export const companySizeSchema = z.enum(companySizeValues);
 export const industrySchema = z.enum(industryValues);
@@ -33,27 +33,24 @@ export const ssoProviderSelectionSchema = z.union([
 export const teamRoleSchema = z.enum(teamRoleValues);
 
 export const workspaceBasicsSchema = z.object({
-  workspaceName: z
-    .string()
-    .trim()
-    .min(3, "Workspace name must be at least 3 characters."),
-  slug: z
-    .string()
-    .trim()
-    .min(3, "Slug must be at least 3 characters.")
-    .max(50, "Slug must be 50 characters or fewer.")
-    .regex(
-      slugPattern,
-      "Slug must use lowercase letters, numbers, and hyphens only.",
-    ),
-  adminEmail: z
-    .string()
-    .trim()
-    .email("Enter a valid admin email address."),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters."),
-  confirmPassword: z.string().min(1, "Please confirm the password."),
+  workspaceName: trimmedStringSchema.min(3, {
+    error: "Workspace name must be at least 3 characters.",
+  }),
+  slug: trimmedStringSchema
+    .min(3, { error: "Slug must be at least 3 characters." })
+    .max(50, { error: "Slug must be 50 characters or fewer." })
+    .regex(slugPattern, {
+      error: "Slug must use lowercase letters, numbers, and hyphens only.",
+    }),
+  adminEmail: trimmedStringSchema.pipe(
+    z.email({ error: "Enter a valid admin email address." }),
+  ),
+  password: z.string().min(8, {
+    error: "Password must be at least 8 characters.",
+  }),
+  confirmPassword: z.string().min(1, {
+    error: "Please confirm the password.",
+  }),
 });
 
 export const organizationSchema = z.object({
@@ -64,14 +61,14 @@ export const organizationSchema = z.object({
 
 export const billingSchema = z.object({
   useDifferentBillingContact: z.boolean(),
-  billingEmail: z.string().trim(),
+  billingEmail: trimmedStringSchema,
 });
 
 export const securitySchema = z.object({
   enableSSO: z.boolean(),
   ssoProvider: ssoProviderSelectionSchema,
-  ssoDomain: z.string().trim(),
-  ssoMetadataUrl: z.string().trim(),
+  ssoDomain: trimmedStringSchema,
+  ssoMetadataUrl: trimmedStringSchema,
 });
 
 export const notificationsSchema = z.object({
@@ -81,101 +78,118 @@ export const notificationsSchema = z.object({
 });
 
 export const teamMemberSchema = z.object({
-  id: z.string().trim().min(1, "Team member id is required."),
-  name: z.string().trim().min(1, "Team member name is required."),
-  email: z.string().trim().email("Enter a valid team member email."),
+  id: trimmedStringSchema.min(1, {
+    error: "Team member id is required.",
+  }),
+  name: trimmedStringSchema.min(1, {
+    error: "Team member name is required.",
+  }),
+  email: trimmedStringSchema.pipe(
+    z.email({ error: "Enter a valid team member email." }),
+  ),
   role: teamRoleSchema,
 });
 
 export const teamMembersSchema = z
   .array(teamMemberSchema)
-  .min(1, "Add at least one team member.")
-  .refine(
-    (members) =>
-      new Set(members.map((member) => member.email.trim().toLowerCase())).size ===
-      members.length,
-    {
-      message: "Team member emails must be unique.",
-    },
-  )
-  .refine(
-    (members) => members.filter((member) => member.role === "owner").length === 1,
-    {
-      message: 'Exactly one team member must have the role "owner".',
-    },
-  );
+  .min(1, { error: "Add at least one team member." })
+  .check((ctx) => {
+    const normalizedEmails = ctx.value.map((member) =>
+      member.email.trim().toLowerCase(),
+    );
 
-export const workspaceSchema = z
-  .object({
-    workspaceName: workspaceBasicsSchema.shape.workspaceName,
-    slug: workspaceBasicsSchema.shape.slug,
-    adminEmail: workspaceBasicsSchema.shape.adminEmail,
-    password: workspaceBasicsSchema.shape.password,
-    confirmPassword: workspaceBasicsSchema.shape.confirmPassword,
-    organization: organizationSchema,
-    billing: billingSchema,
-    security: securitySchema,
-    notifications: notificationsSchema,
-    teamMembers: teamMembersSchema,
-  })
-  .superRefine((values, ctx) => {
-    if (values.confirmPassword !== values.password) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Passwords do not match.",
-        path: ["confirmPassword"],
+    if (new Set(normalizedEmails).size !== normalizedEmails.length) {
+      ctx.issues.push({
+        code: "custom",
+        input: ctx.value,
+        message: "Team member emails must be unique.",
       });
     }
 
-    if (values.billing.useDifferentBillingContact) {
-      if (!values.billing.billingEmail) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Billing email is required when a different contact is used.",
-          path: ["billing", "billingEmail"],
-        });
-      } else if (
-        !billingEmailSchema.safeParse(values.billing.billingEmail).success
-      ) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Enter a valid billing email address.",
-          path: ["billing", "billingEmail"],
-        });
-      }
-    }
-
-    if (values.security.enableSSO) {
-      if (!values.security.ssoProvider) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Select an SSO provider.",
-          path: ["security", "ssoProvider"],
-        });
-      }
-
-      if (!values.security.ssoDomain) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "SSO domain is required when SSO is enabled.",
-          path: ["security", "ssoDomain"],
-        });
-      }
-
-      if (!values.security.ssoMetadataUrl) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Metadata URL is required when SSO is enabled.",
-          path: ["security", "ssoMetadataUrl"],
-        });
-      } else if (
-        !metadataUrlSchema.safeParse(values.security.ssoMetadataUrl).success
-      ) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Enter a valid metadata URL.",
-          path: ["security", "ssoMetadataUrl"],
-        });
-      }
+    if (
+      ctx.value.filter((member) => member.role === "owner").length !== 1
+    ) {
+      ctx.issues.push({
+        code: "custom",
+        input: ctx.value,
+        message: 'Exactly one team member must have the role "owner".',
+      });
     }
   });
+
+const workspaceSchemaBase = workspaceBasicsSchema.extend({
+  organization: organizationSchema,
+  billing: billingSchema,
+  security: securitySchema,
+  notifications: notificationsSchema,
+  teamMembers: teamMembersSchema,
+});
+
+export const workspaceSchema = workspaceSchemaBase.check((ctx) => {
+  const values = ctx.value;
+
+  if (values.confirmPassword !== values.password) {
+    ctx.issues.push({
+      code: "custom",
+      input: values.confirmPassword,
+      message: "Passwords do not match.",
+      path: ["confirmPassword"],
+    });
+  }
+
+  if (values.billing.useDifferentBillingContact) {
+    if (!values.billing.billingEmail) {
+      ctx.issues.push({
+        code: "custom",
+        input: values.billing.billingEmail,
+        message: "Billing email is required when a different contact is used.",
+        path: ["billing", "billingEmail"],
+      });
+    } else if (!billingEmailSchema.safeParse(values.billing.billingEmail).success) {
+      ctx.issues.push({
+        code: "custom",
+        input: values.billing.billingEmail,
+        message: "Enter a valid billing email address.",
+        path: ["billing", "billingEmail"],
+      });
+    }
+  }
+
+  if (values.security.enableSSO) {
+    if (!values.security.ssoProvider) {
+      ctx.issues.push({
+        code: "custom",
+        input: values.security.ssoProvider,
+        message: "Select an SSO provider.",
+        path: ["security", "ssoProvider"],
+      });
+    }
+
+    if (!values.security.ssoDomain) {
+      ctx.issues.push({
+        code: "custom",
+        input: values.security.ssoDomain,
+        message: "SSO domain is required when SSO is enabled.",
+        path: ["security", "ssoDomain"],
+      });
+    }
+
+    if (!values.security.ssoMetadataUrl) {
+      ctx.issues.push({
+        code: "custom",
+        input: values.security.ssoMetadataUrl,
+        message: "Metadata URL is required when SSO is enabled.",
+        path: ["security", "ssoMetadataUrl"],
+      });
+    } else if (
+      !metadataUrlSchema.safeParse(values.security.ssoMetadataUrl).success
+    ) {
+      ctx.issues.push({
+        code: "custom",
+        input: values.security.ssoMetadataUrl,
+        message: "Enter a valid metadata URL.",
+        path: ["security", "ssoMetadataUrl"],
+      });
+    }
+  }
+});
