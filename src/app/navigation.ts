@@ -98,8 +98,9 @@ export const fairnessPrinciples = [
 ] as const;
 
 export const shellStatusBadges: readonly HeaderBadge[] = [
-  { label: "Phase 2", variant: "secondary" },
+  { label: "Phase 3", variant: "secondary" },
   { label: "Routing Ready", variant: "outline" },
+  { label: "Diagnostics Ready", variant: "outline" },
   { label: "Placeholder Pages", variant: "outline" },
 ] as const;
 

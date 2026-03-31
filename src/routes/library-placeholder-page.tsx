@@ -15,8 +15,12 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  createPlaceholderWorkspaceDiagnostics,
+  createWorkspaceComparisonNotes,
+} from "@/features/workspace-form/shared/diagnostics";
+import { WorkspaceDiagnosticsSidebar } from "@/features/workspace-form/shared/workspace-diagnostics-sidebar";
 
 type LibraryPlaceholderPageProps = {
   routeId: LibraryRouteId;
@@ -32,6 +36,8 @@ function LibraryPlaceholderPage({ routeId }: LibraryPlaceholderPageProps) {
   const siblingRoutes = libraryRoutes.filter(
     (candidate) => candidate.id !== route.id,
   );
+  const diagnostics = createPlaceholderWorkspaceDiagnostics(route.badgeLabel);
+  const comparisonNotes = createWorkspaceComparisonNotes(route.badgeLabel);
 
   return (
     <div className="grid gap-8">
@@ -42,7 +48,7 @@ function LibraryPlaceholderPage({ routeId }: LibraryPlaceholderPageProps) {
           { label: route.badgeLabel, variant: "secondary" },
           { label: "Shared Zod Schema", variant: "outline" },
           { label: "Shared UI", variant: "outline" },
-          { label: "Phase 2 Placeholder", variant: "outline" },
+          { label: "Phase 3 Diagnostics", variant: "outline" },
         ]}
       />
 
@@ -88,24 +94,15 @@ function LibraryPlaceholderPage({ routeId }: LibraryPlaceholderPageProps) {
         </div>
 
         <div className="grid gap-6 self-start xl:sticky xl:top-6">
-          <InfoPanel
-            title="Current Route Status"
-            description="Phase 2 stops at navigation, shell composition, and placeholder content."
-          >
-            <div className="grid gap-3">
-              <Badge variant="secondary" className="w-fit rounded-full px-2.5">
-                {route.badgeLabel}
-              </Badge>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                The actual form wiring, diagnostics sidebar, render counters,
-                and async validation flow begin in later implementation phases.
-              </p>
-            </div>
-          </InfoPanel>
+          <WorkspaceDiagnosticsSidebar
+            libraryLabel={route.badgeLabel}
+            diagnostics={diagnostics}
+            notes={comparisonNotes}
+          />
 
           <InfoPanel
             title="Jump To Another Library"
-            description="These routes already share the same shell so the full implementations can be dropped in later without changing the surrounding experience."
+            description="These routes already share the same shell and diagnostics surface so the full implementations can be dropped in later without changing the surrounding experience."
           >
             <div className="grid gap-3">
               {siblingRoutes.map((siblingRoute) => (

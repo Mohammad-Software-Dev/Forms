@@ -122,7 +122,7 @@ function HomeRoute() {
 
           <InfoPanel
             title="Current Project Status"
-            description="Phase 2 establishes navigation and placeholder pages before any library-specific form implementation begins."
+            description="Phase 3 establishes the shared diagnostics surface before any library-specific form implementation begins."
           >
             <div className="grid gap-3">
               <div className="flex flex-wrap gap-2">
@@ -133,13 +133,13 @@ function HomeRoute() {
                   Shared Shell
                 </Badge>
                 <Badge variant="outline" className="rounded-full px-2.5">
-                  Library Placeholders
+                  Diagnostics Surface
                 </Badge>
               </div>
               <p className="text-sm leading-relaxed text-muted-foreground">
                 The next implementation phase can now mount real TanStack Form,
-                React Hook Form, and Formik pages into a stable, shared route
-                structure.
+                React Hook Form, and Formik adapters into a stable route shell
+                with a shared diagnostics contract already in place.
               </p>
             </div>
           </InfoPanel>
