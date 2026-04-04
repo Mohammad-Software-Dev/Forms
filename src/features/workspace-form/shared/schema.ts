@@ -12,6 +12,12 @@ import {
 export const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 const trimmedStringSchema = z.string().trim();
+export const workspaceSlugSchema = trimmedStringSchema
+  .min(3, { error: "Slug must be at least 3 characters." })
+  .max(50, { error: "Slug must be 50 characters or fewer." })
+  .regex(slugPattern, {
+    error: "Slug must use lowercase letters, numbers, and hyphens only.",
+  });
 
 const billingEmailSchema = trimmedStringSchema.pipe(
   z.email({ error: "Enter a valid billing email address." }),
@@ -36,12 +42,7 @@ export const workspaceBasicsSchema = z.object({
   workspaceName: trimmedStringSchema.min(3, {
     error: "Workspace name must be at least 3 characters.",
   }),
-  slug: trimmedStringSchema
-    .min(3, { error: "Slug must be at least 3 characters." })
-    .max(50, { error: "Slug must be 50 characters or fewer." })
-    .regex(slugPattern, {
-      error: "Slug must use lowercase letters, numbers, and hyphens only.",
-    }),
+  slug: workspaceSlugSchema,
   adminEmail: trimmedStringSchema.pipe(
     z.email({ error: "Enter a valid admin email address." }),
   ),

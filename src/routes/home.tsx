@@ -53,6 +53,18 @@ function HomeRoute() {
                       >
                         {route.badgeLabel}
                       </Badge>
+                      <Badge
+                        variant={
+                          route.implementationState === "live"
+                            ? "secondary"
+                            : "outline"
+                        }
+                        className="rounded-full px-2.5 text-xs"
+                      >
+                        {route.implementationState === "live"
+                          ? "Live Route"
+                          : "Placeholder"}
+                      </Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="grid gap-2 pt-4">
@@ -67,11 +79,15 @@ function HomeRoute() {
                   </CardContent>
                   <CardFooter className="items-center justify-between gap-3">
                     <span className="text-xs text-muted-foreground">
-                      Placeholder route ready
+                      {route.implementationState === "live"
+                        ? "Live form route available"
+                        : "Placeholder route ready"}
                     </span>
                     <Button asChild size="sm">
                       <Link to={route.path}>
-                        Open route
+                        {route.implementationState === "live"
+                          ? "Open live route"
+                          : "Open route"}
                         <ArrowRight className="size-4" />
                       </Link>
                     </Button>
@@ -122,12 +138,12 @@ function HomeRoute() {
 
           <InfoPanel
             title="Current Project Status"
-            description="Phase 3 establishes the shared diagnostics surface before any library-specific form implementation begins."
+            description="Phase 4 delivers the first live TanStack Form route while React Hook Form and Formik remain on the shared placeholder shell."
           >
             <div className="grid gap-3">
               <div className="flex flex-wrap gap-2">
                 <Badge variant="secondary" className="rounded-full px-2.5">
-                  Routing Ready
+                  TanStack Live
                 </Badge>
                 <Badge variant="outline" className="rounded-full px-2.5">
                   Shared Shell
@@ -137,9 +153,10 @@ function HomeRoute() {
                 </Badge>
               </div>
               <p className="text-sm leading-relaxed text-muted-foreground">
-                The next implementation phase can now mount real TanStack Form,
-                React Hook Form, and Formik adapters into a stable route shell
-                with a shared diagnostics contract already in place.
+                The next implementation phases can now add React Hook Form and
+                Formik against a shell that already has a live TanStack
+                baseline, a shared diagnostics contract, and shared UI
+                primitives in place.
               </p>
             </div>
           </InfoPanel>

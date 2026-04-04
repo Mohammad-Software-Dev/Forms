@@ -1,7 +1,7 @@
-import { LibraryPlaceholderPage } from "@/routes/library-placeholder-page";
+import { TanStackFormPage } from "@/features/workspace-form/tanstack-form/page";
 
 function TanStackFormRoute() {
-  return <LibraryPlaceholderPage routeId="tanstack-form" />;
+  return <TanStackFormPage />;
 }
 
 export { TanStackFormRoute };

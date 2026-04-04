@@ -10,6 +10,7 @@ export type LibraryRouteMeta = NavItem & {
   id: LibraryRouteId;
   title: string;
   badgeLabel: string;
+  implementationState: "live" | "placeholder";
   placeholderStatus: string;
   focusAreas: readonly string[];
 };
@@ -35,6 +36,7 @@ export const libraryRoutes: readonly LibraryRouteMeta[] = [
     description:
       "Headless, composable form architecture for deeply nested, scalable, type-safe systems.",
     badgeLabel: "TanStack Form",
+    implementationState: "live",
     placeholderStatus:
       "This route is reserved for the first full implementation so the comparison baseline is established on the most composable architecture first.",
     focusAreas: [
@@ -51,6 +53,7 @@ export const libraryRoutes: readonly LibraryRouteMeta[] = [
     description:
       "Concise, production-friendly form ergonomics with strong support for common input patterns.",
     badgeLabel: "React Hook Form",
+    implementationState: "placeholder",
     placeholderStatus:
       "This route will mirror the exact same workspace setup flow after the TanStack baseline is in place, preserving the shared schema, defaults, and UI.",
     focusAreas: [
@@ -67,6 +70,7 @@ export const libraryRoutes: readonly LibraryRouteMeta[] = [
     description:
       "Explicit values, errors, and touched state that keep the mental model readable and familiar.",
     badgeLabel: "Formik",
+    implementationState: "placeholder",
     placeholderStatus:
       "This route will land after the other adapters are scaffolded, using the same Zod schema and product requirements instead of a separate validation model.",
     focusAreas: [
@@ -98,10 +102,10 @@ export const fairnessPrinciples = [
 ] as const;
 
 export const shellStatusBadges: readonly HeaderBadge[] = [
-  { label: "Phase 3", variant: "secondary" },
-  { label: "Routing Ready", variant: "outline" },
+  { label: "Phase 4", variant: "secondary" },
+  { label: "TanStack Live", variant: "outline" },
   { label: "Diagnostics Ready", variant: "outline" },
-  { label: "Placeholder Pages", variant: "outline" },
+  { label: "RHF / Formik Pending", variant: "outline" },
 ] as const;
 
 export function getLibraryRouteMeta(id: LibraryRouteId) {
